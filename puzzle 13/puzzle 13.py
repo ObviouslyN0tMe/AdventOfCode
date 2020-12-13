@@ -18,6 +18,7 @@ def formatData(data):
     return arrival_timestamp, bus_ids
 
 
+# part 1
 def findBestBus(arrival, bus_ids):
     best_bus_id = 0
     best_bus_waitingtime = 1000
@@ -30,30 +31,7 @@ def findBestBus(arrival, bus_ids):
     return best_bus_id, best_bus_waitingtime, best_bus_id*best_bus_waitingtime
 
 
-def findStart(bus_ids, earlier_buses, a, b):
-    steps = list(bus_ids)[-a]
-    checked_id = list(bus_ids)[-b]
-    checked_offset = bus_ids[checked_id]
-    if checked_id in earlier_buses:
-        el = "e"
-    else:
-        el = "l"
-    timestamp = 0
-    got_it = False
-    while not got_it:
-        timestamp += steps
-        earlier = timestamp % checked_id
-        if el == "e":
-            if - earlier == checked_offset:
-                got_it = True
-        else:
-            later = checked_id - earlier
-            if later == checked_offset:
-                got_it = True
-    matching_timestamp = timestamp
-    return matching_timestamp
-
-
+# part 2
 def calcContestTimestamp(bus_ids, new_start):
     timestamp = new_start
     steps = 1
