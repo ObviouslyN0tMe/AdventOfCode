@@ -96,11 +96,11 @@ def runProgramm2(data):
             for index in all_indexes:
                 result_dict[int(index, 2)] = line[1]
     for value in result_dict.values():
-        result += value
+        result += int(value)
     return result
 
 
-code = formatData(testdata)
+code = formatData(rawdata)
 # Part 1
 print(runProgramm1(code))
 # Part 2
