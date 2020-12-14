@@ -60,9 +60,7 @@ def getAllIndexes(index):
     new_indexes = []
     while all_indexes[0].count("X") != 0:
         occur_index = all_indexes[0].find("X")
-        print(all_indexes)
         for index in all_indexes:
-            print(index)
             list_index = list(index)
             list_index[occur_index] = "0"
             index = "".join(list_index)
