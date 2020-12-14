@@ -62,6 +62,7 @@ def getAllIndexes(index):
         occur_index = all_indexes[0].find("X")
         print(all_indexes)
         for index in all_indexes:
+            print(index)
             list_index = list(index)
             list_index[occur_index] = "0"
             index = "".join(list_index)
@@ -70,6 +71,7 @@ def getAllIndexes(index):
             index = "".join(list_index)
             new_indexes.append(index)
         all_indexes = new_indexes
+        new_indexes = []
     return all_indexes
 
 
@@ -104,5 +106,4 @@ code = formatData(testdata)
 # Part 1
 print(runProgramm1(code))
 # Part 2
-# print(runProgramm2(code))
-print(getAllIndexes("XXX"))
+print(runProgramm2(code))
