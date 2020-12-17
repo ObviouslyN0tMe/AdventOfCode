@@ -45,8 +45,9 @@ def countNeighbours(position, copy, cubes):
 
 
 def doCycles(cubes, count):
+    copy = cubes.copy()
+    active_count = countNeighbours((0, 0, 0), cubes, cubes)
     for cycle in range(count):
-        copy = cubes.copy()
         for position, state in copy.items():
             active_count = countNeighbours(position, copy, cubes)
             if active_count == 3 or (state and active_count == 2):
