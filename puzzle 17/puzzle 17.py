@@ -60,4 +60,3 @@ def doCycles(cubes, count):
 
 cubes = formatData(testdata)
 print(doCycles(cubes, 6))
-
