@@ -17,19 +17,20 @@ def formatData(data):
         if size // 2 != 0:
             line += "."
         for index_c, cube in enumerate(line):
-            cubes[-index_l + size//2, index_c - size//2, 0] = True if cube == "#" else False
+            cubes[-index_l + size//2, index_c - size//2, 0, 0] = True if cube == "#" else False
     return cubes
 
 
 def findNeighbours(position):
-    directions = [x for x in itertools.product([-1, 0, 1], repeat=3)]
-    directions.remove((0, 0, 0))
+    directions = [x for x in itertools.product([-1, 0, 1], repeat=4)]
+    directions.remove((0, 0, 0, 0))
     neighbours = []
     for direction in directions:
         n1 = position[0] + direction[0]
         n2 = position[1] + direction[1]
         n3 = position[2] + direction[2]
-        neighbours.append((n1, n2, n3))
+        n4 = position[3] + direction[3]
+        neighbours.append((n1, n2, n3, n4))
     return neighbours
 
 
