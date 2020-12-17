@@ -33,12 +33,12 @@ def findNeighbours(position):
     return neighbours
 
 
-def countNeighbours(position, new_cubes, cubes):
+def countNeighbours(position, copy, cubes):
     count = 0
     neighbours = findNeighbours(position)
     for neighbour in neighbours:
-        if neighbour in new_cubes:
-            if new_cubes[neighbour]:
+        if neighbour in copy:
+            if copy[neighbour]:
                 count += 1
         else:
             cubes[neighbour] = False
@@ -47,9 +47,9 @@ def countNeighbours(position, new_cubes, cubes):
 
 def doCycles(cubes, count):
     for cycle in range(0, count, 1):
-        new_cubes = cubes.copy()
-        for position, state in new_cubes.items():
-            neighbours, cubes = countNeighbours(position, new_cubes, cubes)
+        copy = cubes.copy()
+        for position, state in copy.items():
+            neighbours, cubes = countNeighbours(position, copy, cubes)
             if neighbours == 3 or (state and neighbours == 2):
                 cubes[position] = True
             else:
