@@ -1,20 +1,16 @@
 # puzzle input
 with open("puzzle input") as file:
-    rawdata = [x.strip("\n") for x in file.readlines()]
+    rawdata = [x.strip("\n").replace(" ", "") for x in file.readlines()]
 # test input
 with open("test input") as file:
-    testdata = [x.strip("\n") for x in file.readlines()]
+    testdata = [x.strip("\n").replace(" ", "") for x in file.readlines()]
 
 
 def formatData(data):
     formated_data = []
     for line in data:
-        # remove spaces
-        line = line.replace(" ", "")
         row = []
-        # collect list for row
         for char in line:
-            # collect list for row
             if char == ")":
                 in_par = []
                 char = row.pop(-1)
@@ -46,11 +42,15 @@ def addBeforeMultiply(row):
     return new_row
 
 
+def removeLists(my_list):
+    while len(my_list) == 1 and isinstance(my_list, list):
+        my_list = my_list[0]
+    return my_list
+
+
 def evaluateExpression(left, operator, right):
-    while len(left) == 1 and isinstance(left, list):
-        left = left[0]
-    while len(right) == 1 and isinstance(right, list):
-        right = right[0]
+    left = removeLists(left)
+    right = removeLists(right)
     if len(left) > 1:
         left = evaluateExpression(left[:-2], left[-2], left[-1])
     if len(right) > 1:
@@ -64,8 +64,7 @@ def evaluateExpression(left, operator, right):
 def sumAllRows(rows):
     sum_rows = 0
     for row in rows:
-        while len(row) == 1 and isinstance(row, list):
-            row = row[0]
+        row = removeLists(row)
         sum_rows += int(evaluateExpression(row[:-2], row[-2], row[-1]))
     return sum_rows
 
