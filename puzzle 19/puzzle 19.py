@@ -29,20 +29,17 @@ def formatData(data):
 
 
 def checkIfValid(message, rules):
-    message_list = []
-    for letter in message:
-        message_list.append(letter)
+    message_list = list(message)
     for index, letter in enumerate(message_list):
         if letter == "a":
-            message_list[index] = "99"
+            message_list[index] = "4"
         else:
-            message_list[index] = "36"
+            message_list[index] = "5"
     done = False
     results = [message_list]
     valid = False
     while not done:
         new_results = []
-        used = []
         for result in results:
             for key in rules.keys():
                 if len(key) == 1:
@@ -52,29 +49,19 @@ def checkIfValid(message, rules):
                         result_copy[index] = rules[key]
                         if result_copy not in results:
                             new_results.append(result_copy)
-                        if result not in used:
-                            used.append(result)
                 else:
                     try:
                         index0 = result.index(key[0])
-                        index1 = result.index(key[1])
-                    except ValueError:
-                        index0 = 0
-                        index1 = 0
-                    if index1 - index0 == 1:
-                        for rule_nr in rules[key]:
-                            result_copy = result.copy()
-                            result_copy[index0] = rule_nr
-                            result_copy.pop(index1)
-                            if result_copy not in results:
-                                new_results.append(result_copy)
-                        if result not in used:
-                            used.append(result)
-        results = []
-        for new_result in new_results:
-            results.append(new_result)
-        for used_result in used:
-            results.append(used_result)
+                        if result[index0+1] == key[1]:
+                            for rule_nr in rules[key]:
+                                result_copy = result.copy()
+                                result_copy[index0] = rule_nr
+                                result_copy.pop(index0+1)
+                                if result_copy not in results:
+                                    new_results.append(result_copy)
+                    except (ValueError, IndexError):
+                        pass
+        results = new_results.copy()
         if not results:
             done = True
         if ["0"] in results:
@@ -87,10 +74,12 @@ def validateMessages(messages, rules):
     count = 0
     for message in messages:
         valid = checkIfValid(message, rules)
+        print(valid)
         if valid:
             count += 1
     return count
 
 
 rules, messages = formatData(testdata)
+print(rules)
 print(validateMessages(messages, rules))
