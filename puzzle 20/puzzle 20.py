@@ -20,6 +20,7 @@ class Tile(object):
         self.turned = 0
         self.mirrored = False
 
+    # update borders if content changes
     def __updateBorders__(self):
         top_border = self.tile_content[0]
         left_border = "".join([line[0] for line in self.tile_content])
@@ -34,7 +35,7 @@ class Tile(object):
         # new content
         old_content = self.tile_content.copy()
         new_content = []
-        for line_index in range(1, len(old_content)+1):
+        for line_index in range(1, len(old_content) + 1):
             new_content.append("".join([line[-line_index] for line in old_content]))
         self.tile_content = new_content
         # new borders
@@ -50,7 +51,7 @@ class Tile(object):
         self.mirrored = not self.mirrored
         if self.turned == 0:
             self.turned = 180
-        if self.turned == 180:
+        elif self.turned == 180:
             self.turned = 0
         # new content
         self.tile_content.reverse()
@@ -63,6 +64,14 @@ class Tile(object):
     # get any borders with starting letter of direction in string e.g.: "TLB" returns top, left and bottom borders
     def getBorders(self, directions):
         return [self.tile_borders[direction] for direction in directions]
+
+    # get content without borders
+    def getPicture(self):
+        picture = []
+        content = self.tile_content
+        for line in content[1:-1]:
+            picture.append(line[1:-1])
+        return picture
 
 
 # get tiles from input
@@ -109,7 +118,8 @@ def sortTiles(tiles):
     return normal_tiles, border_tiles, corner_tiles
 
 
-def searchForBorder(remaining_tiles, border_to_search, direction_to_search):
+# Part 2
+def searchMatchingTile(remaining_tiles, border_to_search, direction_to_search):
     matching_tile = None
     for remaining_tile in remaining_tiles:
         # 4 borders unmirrored
@@ -136,6 +146,20 @@ def searchForBorder(remaining_tiles, border_to_search, direction_to_search):
     return matching_tile
 
 
+def createPicture(solved_jigsaw, width, height):
+    picture = []
+    tile_height = len(solved_jigsaw[(0, 0)].getPicture())
+    for row_nr in range(height):
+        for i in range(tile_height):
+            picture.append("")
+        for tile_nr in range(width):
+            tile = solved_jigsaw[(width, height)]
+            tile_picture = tile.getPicture()
+            for index, content in enumerate(tile_picture):
+                picture[height*tile_height+index] += content
+    return picture
+
+
 def solveJigsaw(remaining_tiles, start_tile):
     # prepare while loop
     current_coordinates = [0, 0]
@@ -160,21 +184,23 @@ def solveJigsaw(remaining_tiles, start_tile):
             direction_to_search = "L"
             current_coordinates[1] += 1
         # search for border in remaining tiles
-        matching_tile = searchForBorder(remaining_tiles, border_to_search, direction_to_search)
+        matching_tile = searchMatchingTile(remaining_tiles, border_to_search, direction_to_search)
         # if a tile was found
         if matching_tile:
             remaining_tiles.remove(matching_tile)
             solution[tuple(current_coordinates)] = matching_tile
+            print(current_coordinates[0] + 1, current_coordinates[1] + 1)
+            print(createPicture(solution, current_coordinates[0] + 1, current_coordinates[1] + 1))
             if new_row:
                 current_rowstart = matching_tile
                 new_row = False
         # else start a new row
         else:
             new_row = True
-    return solution
+    return solution, current_coordinates[0] + 1, current_coordinates[1] + 1
 
 
-puzzle_tiles = formatData(testdata)
+puzzle_tiles = formatData(rawdata)
 normal_puzzle_tiles, border_puzzle_tiles, corner_puzzle_tiles = sortTiles(puzzle_tiles)
-solved_jigsaw = solveJigsaw(puzzle_tiles, corner_puzzle_tiles[0])
+solved_jigsaw, width, height = solveJigsaw(puzzle_tiles, corner_puzzle_tiles[0])
 print("Part 1:", math.prod([x.id_number for x in corner_puzzle_tiles]))
