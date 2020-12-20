@@ -166,28 +166,25 @@ def solveJigsaw(remaining_tiles, start_tile):
     # prepare while loop
     current_coordinates = [0, 0]
     remaining_tiles.remove(start_tile)
-    new_row = False
+    new_column = False
     # start tile bottom left at [0, 0] turned the right way
     current_tile = start_tile
     while start_tile.jigsaw_border != {"T": False, "L": True, "B": True, "R": False}:
         current_tile.turn()
-    print(start_tile.id_number)
-    [print(x) for x in start_tile.getPicture()]
-    print("done")
     current_rowstart = start_tile
     solution = {tuple(current_coordinates): start_tile}
     # place next tile until no tiles are left
     while remaining_tiles:
         # get border and direction to search, update current coordinates
-        if new_row:
-            border_to_search = current_rowstart.getBorders("T")
-            direction_to_search = "B"
-            current_coordinates[0] += 1
-            current_coordinates[1] = 0
-        else:
-            border_to_search = current_tile.getBorders("R")
+        if new_column:
+            border_to_search = current_rowstart.getBorders("R")
             direction_to_search = "L"
             current_coordinates[1] += 1
+            current_coordinates[0] = 0
+        else:
+            border_to_search = current_tile.getBorders("T")
+            direction_to_search = "B"
+            current_coordinates[0] += 1
         # search for border in remaining tiles
         matching_tile = searchMatchingTile(remaining_tiles, border_to_search, direction_to_search)
         # if a tile was found
@@ -197,12 +194,12 @@ def solveJigsaw(remaining_tiles, start_tile):
             picture = createPicture(solution, current_coordinates[0] + 1, current_coordinates[1] + 1)
             [print(x) for x in picture]
             print("")
-            if new_row:
+            if new_column:
                 current_rowstart = matching_tile
-                new_row = False
+                new_column = False
         # else start a new row
         else:
-            new_row = True
+            new_column = True
     return solution, current_coordinates[0] + 1, current_coordinates[1] + 1
 
 
