@@ -5,10 +5,12 @@ with open("puzzle input") as file:
 with open("test input") as file:
     testdata = [x.strip("\n") for x in file.readlines()]
 
+import math
+
 
 class Tile(object):
     def __init__(self, id_number, tile_content):
-        self.id_number = id_number
+        self.id_number = int(id_number)
         self.tile_content = tile_content
         self.tile_borders = {}
         self.__updateBorders__()
@@ -29,20 +31,34 @@ class Tile(object):
     def turn(self):
         self.turned += 90
         self.turned %= 360
+        # new content
         old_content = self.tile_content.copy()
         new_content = []
         for line_index in range(1, len(old_content)+1):
             new_content.append("".join([line[-line_index] for line in old_content]))
         self.tile_content = new_content
+        # new borders
         self.__updateBorders__()
+        old_jigsaw_border = self.jigsaw_border.copy()
+        self.jigsaw_border["T"] = old_jigsaw_border["R"]
+        self.jigsaw_border["L"] = old_jigsaw_border["T"]
+        self.jigsaw_border["B"] = old_jigsaw_border["L"]
+        self.jigsaw_border["R"] = old_jigsaw_border["B"]
 
     # mirror the tile
     def mirror(self):
         self.mirrored = not self.mirrored
+        if self.turned == 90:
+            self.turned = 270
+        if self.turned == 270:
+            self.turned = 90
+        # new content
         self.tile_content.reverse()
-        self.turned = 90 if self.turned == 270 else 90
-        self.turned = 270 if self.turned == 90 else 270
+        # new borders
         self.__updateBorders__()
+        old_jigsaw_border = self.jigsaw_border.copy()
+        self.jigsaw_border["T"] = old_jigsaw_border["B"]
+        self.jigsaw_border["B"] = old_jigsaw_border["T"]
 
     # get any borders with starting letter of direction in string e.g.: "TLB" returns top, left and bottom borders
     def getBorders(self, directions):
@@ -91,12 +107,76 @@ def sortTiles(tiles):
     return normal_tiles, border_tiles, corner_tiles
 
 
-def solveJigsaw(tiles):
-    pass
+def searchForBorder(remaining_tiles, border_to_search, direction_to_search):
+    matching_tile = None
+    mirrored = False
+    turned = 0
+    for remaining_tile in remaining_tiles:
+        # 4 borders unmirrored
+        for i in range(4):
+            current_border = remaining_tile.getBorders(direction_to_search)
+            if current_border == border_to_search:
+                matching_tile = remaining_tile
+                break
+            remaining_tile.turn()
+        # 4 borders mirrored
+        if not matching_tile:
+            remaining_tile.mirror()
+            for i in range(4):
+                current_border = remaining_tile.getBorders(direction_to_search)
+                if current_border == border_to_search:
+                    matching_tile = remaining_tile
+                    break
+                remaining_tile.turn()
+        if not matching_tile:
+            remaining_tile.mirror()
+        # if matching tile is found
+        if matching_tile:
+            break
+    return matching_tile
+
+
+def solveJigsaw(remaining_tiles, start_tile):
+    # prepare while loop
+    remaining_tiles
+    current_coordinates = [0, 0]
+    remaining_tiles.remove(start_tile)
+    new_row = False
+    # start tile bottom left at [0, 0] turned the right way
+    current_tile = start_tile
+    while start_tile.jigsaw_border != {"T": False, "L": True, "B": True, "R": False}:
+        current_tile.turn()
+    current_rowstart = start_tile
+    solution = {tuple(current_coordinates): start_tile}
+    # place next tile until no tiles are left
+    while remaining_tiles:
+        print(current_coordinates)
+        # get border and direction to search, update current coordinates
+        if new_row:
+            border_to_search = current_rowstart.getBorders("T")
+            direction_to_search = "B"
+            current_coordinates[0] += 1
+            current_coordinates[1] = 0
+        else:
+            border_to_search = current_tile.getBorders("R")
+            direction_to_search = "L"
+            current_coordinates[1] += 1
+        # search for border in remaining tiles
+        matching_tile = searchForBorder(remaining_tiles, border_to_search, direction_to_search)
+        # if a tile was found
+        if matching_tile:
+            remaining_tiles.remove(matching_tile)
+            solution[tuple(current_coordinates)] = matching_tile
+            if new_row:
+                current_rowstart = matching_tile
+                new_row = False
+        # else start a new row
+        else:
+            new_row = True
+    return solution
 
 
 puzzle_tiles = formatData(rawdata)
 normal_puzzle_tiles, border_puzzle_tiles, corner_puzzle_tiles = sortTiles(puzzle_tiles)
-print([tile.id_number for tile in normal_puzzle_tiles])
-print([tile.id_number for tile in border_puzzle_tiles])
-print([tile.id_number for tile in corner_puzzle_tiles])
+solved_jigsaw = solveJigsaw(puzzle_tiles, corner_puzzle_tiles[0])
+print("Part 1:", math.prod([x.id_number for x in corner_puzzle_tiles]))
