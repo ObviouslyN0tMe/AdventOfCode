@@ -146,17 +146,17 @@ def searchMatchingTile(remaining_tiles, border_to_search, direction_to_search):
     return matching_tile
 
 
-def createPicture(solved_jigsaw, width, height):
+def createPicture(solved_jigsaw, height, width):
     picture = []
     tile_height = len(solved_jigsaw[(0, 0)].getPicture())
     for row_nr in range(height):
         for i in range(tile_height):
             picture.append("")
         for tile_nr in range(width):
-            tile = solved_jigsaw[(width, height)]
+            tile = solved_jigsaw[(row_nr, tile_nr)]
             tile_picture = tile.getPicture()
             for index, content in enumerate(tile_picture):
-                picture[height*tile_height+index] += content
+                picture[row_nr*tile_height+index] += content
     return picture
 
 
@@ -189,8 +189,9 @@ def solveJigsaw(remaining_tiles, start_tile):
         if matching_tile:
             remaining_tiles.remove(matching_tile)
             solution[tuple(current_coordinates)] = matching_tile
-            print(current_coordinates[0] + 1, current_coordinates[1] + 1)
-            print(createPicture(solution, current_coordinates[0] + 1, current_coordinates[1] + 1))
+            picture = createPicture(solution, current_coordinates[0] + 1, current_coordinates[1] + 1)
+            [print(x) for x in picture]
+            print("")
             if new_row:
                 current_rowstart = matching_tile
                 new_row = False
