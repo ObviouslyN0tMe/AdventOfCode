@@ -48,10 +48,10 @@ class Tile(object):
     # mirror the tile
     def mirror(self):
         self.mirrored = not self.mirrored
-        if self.turned == 90:
-            self.turned = 270
-        if self.turned == 270:
-            self.turned = 90
+        if self.turned == 0:
+            self.turned = 180
+        if self.turned == 180:
+            self.turned = 0
         # new content
         self.tile_content.reverse()
         # new borders
@@ -65,6 +65,7 @@ class Tile(object):
         return [self.tile_borders[direction] for direction in directions]
 
 
+# get tiles from input
 def formatData(data):
     tiles = []
     tile_content = []
@@ -84,6 +85,7 @@ def formatData(data):
     return tiles
 
 
+# Part 1
 def sortTiles(tiles):
     corner_tiles = []
     border_tiles = []
@@ -109,8 +111,6 @@ def sortTiles(tiles):
 
 def searchForBorder(remaining_tiles, border_to_search, direction_to_search):
     matching_tile = None
-    mirrored = False
-    turned = 0
     for remaining_tile in remaining_tiles:
         # 4 borders unmirrored
         for i in range(4):
@@ -138,7 +138,6 @@ def searchForBorder(remaining_tiles, border_to_search, direction_to_search):
 
 def solveJigsaw(remaining_tiles, start_tile):
     # prepare while loop
-    remaining_tiles
     current_coordinates = [0, 0]
     remaining_tiles.remove(start_tile)
     new_row = False
@@ -150,7 +149,6 @@ def solveJigsaw(remaining_tiles, start_tile):
     solution = {tuple(current_coordinates): start_tile}
     # place next tile until no tiles are left
     while remaining_tiles:
-        print(current_coordinates)
         # get border and direction to search, update current coordinates
         if new_row:
             border_to_search = current_rowstart.getBorders("T")
@@ -176,7 +174,7 @@ def solveJigsaw(remaining_tiles, start_tile):
     return solution
 
 
-puzzle_tiles = formatData(rawdata)
+puzzle_tiles = formatData(testdata)
 normal_puzzle_tiles, border_puzzle_tiles, corner_puzzle_tiles = sortTiles(puzzle_tiles)
 solved_jigsaw = solveJigsaw(puzzle_tiles, corner_puzzle_tiles[0])
 print("Part 1:", math.prod([x.id_number for x in corner_puzzle_tiles]))
