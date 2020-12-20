@@ -149,14 +149,16 @@ def searchMatchingTile(remaining_tiles, border_to_search, direction_to_search):
 def createPicture(solved_jigsaw, height, width):
     picture = []
     tile_height = len(solved_jigsaw[(0, 0)].getPicture())
-    for row_nr in range(height):
+    counter = 0
+    for row_nr in range(height - 1, -1, -1):
         for i in range(tile_height):
             picture.append("")
         for tile_nr in range(width):
             tile = solved_jigsaw[(row_nr, tile_nr)]
             tile_picture = tile.getPicture()
             for index, content in enumerate(tile_picture):
-                picture[row_nr*tile_height+index] += content
+                picture[counter*tile_height+index] += content
+        counter += 1
     return picture
 
 
@@ -169,6 +171,9 @@ def solveJigsaw(remaining_tiles, start_tile):
     current_tile = start_tile
     while start_tile.jigsaw_border != {"T": False, "L": True, "B": True, "R": False}:
         current_tile.turn()
+    print(start_tile.id_number)
+    [print(x) for x in start_tile.getPicture()]
+    print("done")
     current_rowstart = start_tile
     solution = {tuple(current_coordinates): start_tile}
     # place next tile until no tiles are left
@@ -201,7 +206,7 @@ def solveJigsaw(remaining_tiles, start_tile):
     return solution, current_coordinates[0] + 1, current_coordinates[1] + 1
 
 
-puzzle_tiles = formatData(rawdata)
+puzzle_tiles = formatData(testdata)
 normal_puzzle_tiles, border_puzzle_tiles, corner_puzzle_tiles = sortTiles(puzzle_tiles)
 solved_jigsaw, width, height = solveJigsaw(puzzle_tiles, corner_puzzle_tiles[0])
 print("Part 1:", math.prod([x.id_number for x in corner_puzzle_tiles]))
