@@ -41,10 +41,10 @@ class Tile(object):
         # new borders
         self.__updateBorders__()
         old_jigsaw_border = self.jigsaw_border.copy()
-        self.jigsaw_border["T"] = old_jigsaw_border["R"]
-        self.jigsaw_border["L"] = old_jigsaw_border["T"]
-        self.jigsaw_border["B"] = old_jigsaw_border["L"]
-        self.jigsaw_border["R"] = old_jigsaw_border["B"]
+        self.jigsaw_border["T"] = old_jigsaw_border["L"]
+        self.jigsaw_border["L"] = old_jigsaw_border["B"]
+        self.jigsaw_border["B"] = old_jigsaw_border["R"]
+        self.jigsaw_border["R"] = old_jigsaw_border["T"]
 
     # mirror the tile
     def mirror(self):
@@ -167,17 +167,17 @@ def solveJigsaw(remaining_tiles, start_tile):
     current_coordinates = [0, 0]
     remaining_tiles.remove(start_tile)
     new_column = False
-    # start tile bottom left at [0, 0] turned the right way
+    # start tile bottom left at [0, 0]
     current_tile = start_tile
-    while start_tile.jigsaw_border != {"T": False, "L": True, "B": True, "R": False}:
+    while current_tile.jigsaw_border != {"T": False, "L": True, "B": True, "R": False}:
         current_tile.turn()
-    current_rowstart = start_tile
+    current_columnstart = start_tile
     solution = {tuple(current_coordinates): start_tile}
     # place next tile until no tiles are left
     while remaining_tiles:
         # get border and direction to search, update current coordinates
         if new_column:
-            border_to_search = current_rowstart.getBorders("R")
+            border_to_search = current_columnstart.getBorders("R")
             direction_to_search = "L"
             current_coordinates[1] += 1
             current_coordinates[0] = 0
@@ -189,13 +189,11 @@ def solveJigsaw(remaining_tiles, start_tile):
         matching_tile = searchMatchingTile(remaining_tiles, border_to_search, direction_to_search)
         # if a tile was found
         if matching_tile:
+            current_tile = matching_tile
             remaining_tiles.remove(matching_tile)
             solution[tuple(current_coordinates)] = matching_tile
-            picture = createPicture(solution, current_coordinates[0] + 1, current_coordinates[1] + 1)
-            [print(x) for x in picture]
-            print("")
             if new_column:
-                current_rowstart = matching_tile
+                current_columnstart = matching_tile
                 new_column = False
         # else start a new row
         else:
@@ -203,7 +201,64 @@ def solveJigsaw(remaining_tiles, start_tile):
     return solution, current_coordinates[0] + 1, current_coordinates[1] + 1
 
 
-puzzle_tiles = formatData(testdata)
+def identifySeamonster(picture, y, x):
+    monster_indexes = {0: [18],                                              #
+                       1: [0, 5, 6, 11, 12, 17, 18, 19],   #    ##    ##    ###
+                       2: [1, 4, 7, 10, 13, 16]}            #  #  #  #  #  #
+    for rel_y, rel_x_list in monster_indexes.items():
+        for rel_x in rel_x_list:
+            if picture[y+rel_y][x+rel_x] != "#":
+                return False
+    return True
+
+
+def countSeamonsters(picture):
+    counter = 0
+    for y in range(len(picture) - 2):
+        for x in range(len(picture[0]) - 19):
+            if identifySeamonster(picture, y, x):
+                counter += 1
+    return counter
+
+
+def countWaterRoughness(picture, seamonster_count):
+    counter = 0
+    for line in picture:
+        counter += line.count("#")
+    counter -= seamonster_count*15
+    return counter
+
+
+def part2ForAllPictures(picture_tile):
+    # 4 orientaions not mirrored
+    for i in range(4):
+        seamonster_count = countSeamonsters(picture_tile.tile_content)
+        if seamonster_count > 0:
+            water_roughness = countWaterRoughness(picture_tile.tile_content, seamonster_count)
+            return water_roughness
+        picture_tile.turn()
+    # 4 orientaions mirrored
+    picture_tile.mirror()
+    for i in range(4):
+        seamonster_count = countSeamonsters(picture_tile.tile_content)
+        if seamonster_count > 0:
+            water_roughness = countWaterRoughness(picture_tile.tile_content, seamonster_count)
+            return water_roughness
+        picture_tile.turn()
+    picture_tile.mirror()
+
+
+# part 1
+puzzle_tiles = formatData(rawdata)
 normal_puzzle_tiles, border_puzzle_tiles, corner_puzzle_tiles = sortTiles(puzzle_tiles)
+
+# part 2
 solved_jigsaw, width, height = solveJigsaw(puzzle_tiles, corner_puzzle_tiles[0])
+picture_list = createPicture(solved_jigsaw, height, width)
+picture_tile = Tile(0, picture_list)
+
+# output
+print("Finished Jigsaw:")
+[print(line) for line in picture_list]
 print("Part 1:", math.prod([x.id_number for x in corner_puzzle_tiles]))
+print("Part 2:", part2ForAllPictures(picture_tile))
