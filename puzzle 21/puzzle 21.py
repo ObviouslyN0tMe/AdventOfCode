@@ -7,25 +7,21 @@ with open("test input") as file:
 
 all_ingredients = {}
 allergens_appearance = {}
-ingredients_appearance = {}
+ingredient_count = {}
 all_allergens = {}
 food_counters = {}
 
 
 # format food list
 def formatData(data):
-    global food_list, all_ingredients, allergens_appearance, ingredients_appearance
+    global food_list, all_ingredients, allergens_appearance, ingredient_count
     for line in data:
         line = line.split(" (contains ")
         line_ingredients = line[0].split()
         line_allergens = line[1].split(", ")
         # save every ingredient with all lines it appears in and create a dict to save the matching allergen later
         for ingredient in line_ingredients:
-            if ingredient not in ingredients_appearance:
-                all_ingredients[ingredient] = []
-                ingredients_appearance[ingredient] = [tuple(line_allergens)]
-            else:
-                ingredients_appearance[ingredient].append(tuple(line_allergens))
+            ingredient_count[ingredient] = ingredient_count.get(ingredient, 0) + 1
         # save every allergen with all lines it appears in
         for allergen in line_allergens:
             if allergen not in allergens_appearance:
@@ -48,13 +44,9 @@ def getAllergenFreeIngredients():
                 if ingredient not in all_allergens[allergen]:
                     all_allergens[allergen].append(ingredient)
     allergen_free_counter = 0
-    to_pop = []
     for ingredient, possible_allergens in all_ingredients.items():
         if not possible_allergens:
-            allergen_free_counter += len(ingredients_appearance[ingredient])
-            to_pop.append(ingredient)
-    for ingredient in to_pop:
-        all_ingredients.pop(ingredient)
+            allergen_free_counter += ingredient_count[ingredient]
     return allergen_free_counter
 
 
