@@ -14,19 +14,20 @@ food_counters = {}
 
 # format food list
 def formatData(data):
-    global food_list, all_ingredients, allergens_appearance, ingredient_count
+    global all_ingredients, allergens_appearance, ingredient_count, all_allergens
     for line in data:
         line = line.split(" (contains ")
         line_ingredients = line[0].split()
         line_allergens = line[1].split(", ")
-        # save every ingredient with all lines it appears in and create a dict to save the matching allergen later
+        # save how often every ingredient appears
         for ingredient in line_ingredients:
+            all_ingredients[ingredient] = []
             ingredient_count[ingredient] = ingredient_count.get(ingredient, 0) + 1
         # save every allergen with all lines it appears in
         for allergen in line_allergens:
             if allergen not in allergens_appearance:
                 all_allergens[allergen] = []
-                allergens_appearance[allergen] = [line_ingredients]
+                allergens_appearance[allergen] = line_ingredients
                 food_counters[allergen] = 1
             else:
                 allergens_appearance[allergen] += line_ingredients
@@ -35,7 +36,7 @@ def formatData(data):
 
 # remove all allergenfree ingredients
 def getAllergenFreeIngredients():
-    global food_list, all_ingredients, allergens_appearance, ingredients_appearance
+    global all_ingredients, allergens_appearance, ingredient_count
     for allergen, possible_ing in allergens_appearance.items():
         for ingredient in possible_ing:
             if possible_ing.count(ingredient) == food_counters[allergen]:
