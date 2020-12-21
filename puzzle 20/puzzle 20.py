@@ -1,11 +1,10 @@
+import math
 # puzzle input
 with open("puzzle input") as file:
     rawdata = [x.strip("\n") for x in file.readlines()]
 # test input
 with open("test input") as file:
     testdata = [x.strip("\n") for x in file.readlines()]
-
-import math
 
 
 class Tile(object):
@@ -17,8 +16,6 @@ class Tile(object):
         self.possible_borders = list(self.tile_borders.values()) + \
                                 [border[::-1] for border in list(self.tile_borders.values())]
         self.jigsaw_border = {"T": True, "L": True, "B": True, "R": True}
-        self.turned = 0
-        self.mirrored = False
 
     # update borders if content changes
     def __updateBorders__(self):
@@ -30,8 +27,6 @@ class Tile(object):
 
     # turn tile right by 90°
     def turn(self):
-        self.turned += 90
-        self.turned %= 360
         # new content
         old_content = self.tile_content.copy()
         new_content = []
@@ -48,11 +43,6 @@ class Tile(object):
 
     # mirror the tile
     def mirror(self):
-        self.mirrored = not self.mirrored
-        if self.turned == 0:
-            self.turned = 180
-        elif self.turned == 180:
-            self.turned = 0
         # new content
         self.tile_content.reverse()
         # new borders
@@ -94,11 +84,8 @@ def formatData(data):
     return tiles
 
 
-# Part 1
 def sortTiles(tiles):
     corner_tiles = []
-    border_tiles = []
-    normal_tiles = []
     tiles_to_check = tiles.copy()
     for tile in tiles:
         tiles_to_check.remove(tile)
@@ -108,58 +95,28 @@ def sortTiles(tiles):
                     tile.jigsaw_border[direction] = False
                     break
         border_count = list(tile.jigsaw_border.values()).count(True)
-        if border_count == 0:
-            normal_tiles.append(tile)
-        elif border_count == 1:
-            border_tiles.append(tile)
-        else:
+        if border_count == 2:
             corner_tiles.append(tile)
         tiles_to_check.append(tile)
-    return normal_tiles, border_tiles, corner_tiles
+    return corner_tiles
 
 
-# Part 2
 def searchMatchingTile(remaining_tiles, border_to_search, direction_to_search):
     matching_tile = None
     for remaining_tile in remaining_tiles:
-        # 4 borders unmirrored
-        for i in range(4):
+        # 8 possible borders
+        for i in range(8):
             current_border = remaining_tile.getBorders(direction_to_search)
             if current_border == border_to_search:
                 matching_tile = remaining_tile
                 break
             remaining_tile.turn()
-        # 4 borders mirrored
-        if not matching_tile:
-            remaining_tile.mirror()
-            for i in range(4):
-                current_border = remaining_tile.getBorders(direction_to_search)
-                if current_border == border_to_search:
-                    matching_tile = remaining_tile
-                    break
-                remaining_tile.turn()
-        if not matching_tile:
-            remaining_tile.mirror()
+            if (i+1) % 4 == 0:
+                remaining_tile.mirror()
         # if matching tile is found
         if matching_tile:
             break
     return matching_tile
-
-
-def createPicture(solved_jigsaw, height, width):
-    picture = []
-    tile_height = len(solved_jigsaw[(0, 0)].getPicture())
-    counter = 0
-    for row_nr in range(height - 1, -1, -1):
-        for i in range(tile_height):
-            picture.append("")
-        for tile_nr in range(width):
-            tile = solved_jigsaw[(row_nr, tile_nr)]
-            tile_picture = tile.getPicture()
-            for index, content in enumerate(tile_picture):
-                picture[counter*tile_height+index] += content
-        counter += 1
-    return picture
 
 
 def solveJigsaw(remaining_tiles, start_tile):
@@ -201,6 +158,22 @@ def solveJigsaw(remaining_tiles, start_tile):
     return solution, current_coordinates[0] + 1, current_coordinates[1] + 1
 
 
+def createPicture(solved_jigsaw, height, width):
+    picture = []
+    tile_height = len(solved_jigsaw[(0, 0)].getPicture())
+    counter = 0
+    for row_nr in range(height - 1, -1, -1):
+        for i in range(tile_height):
+            picture.append("")
+        for tile_nr in range(width):
+            tile = solved_jigsaw[(row_nr, tile_nr)]
+            tile_picture = tile.getPicture()
+            for index, content in enumerate(tile_picture):
+                picture[counter*tile_height+index] += content
+        counter += 1
+    return picture
+
+
 def identifySeamonster(picture, y, x):
     monster_indexes = {0: [18],                                              #
                        1: [0, 5, 6, 11, 12, 17, 18, 19],   #    ##    ##    ###
@@ -230,27 +203,18 @@ def countWaterRoughness(picture, seamonster_count):
 
 
 def part2ForAllPictures(picture_tile):
-    # 4 orientaions not mirrored
-    for i in range(4):
+    for i in range(8):
         seamonster_count = countSeamonsters(picture_tile.tile_content)
         if seamonster_count > 0:
-            water_roughness = countWaterRoughness(picture_tile.tile_content, seamonster_count)
-            return water_roughness
+            return countWaterRoughness(picture_tile.tile_content, seamonster_count)
         picture_tile.turn()
-    # 4 orientaions mirrored
-    picture_tile.mirror()
-    for i in range(4):
-        seamonster_count = countSeamonsters(picture_tile.tile_content)
-        if seamonster_count > 0:
-            water_roughness = countWaterRoughness(picture_tile.tile_content, seamonster_count)
-            return water_roughness
-        picture_tile.turn()
-    picture_tile.mirror()
+        if (i + 1) % 4 == 0:
+            picture_tile.mirror()
 
 
 # part 1
 puzzle_tiles = formatData(rawdata)
-normal_puzzle_tiles, border_puzzle_tiles, corner_puzzle_tiles = sortTiles(puzzle_tiles)
+corner_puzzle_tiles = sortTiles(puzzle_tiles)
 
 # part 2
 solved_jigsaw, width, height = solveJigsaw(puzzle_tiles, corner_puzzle_tiles[0])
