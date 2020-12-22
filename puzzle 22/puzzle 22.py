@@ -7,6 +7,8 @@ with open("puzzle input") as file:
 with open("test input") as file:
     testdata = [x.strip(":\n") for x in file.readlines()]
 
+round_count = 0
+
 
 def formatData(data):
     formated_data = {}
@@ -41,7 +43,7 @@ def playRecursiveCombat(player_decks):
     while True:
         # collect cards from top of decks
         played_cards = [player_decks["Player 1"].pop(0), player_decks["Player 2"].pop(0)]
-        # determine round winner via subgame or higher card
+        # determine round winner via subgame
         if played_cards[0] <= len(player_decks["Player 1"]) and played_cards[1] <= len(player_decks["Player 2"]):
             subgame_decks["Player 1"] = player_decks["Player 1"][:played_cards[0]].copy()
             subgame_decks["Player 2"] = player_decks["Player 2"][:played_cards[1]].copy()
@@ -49,6 +51,7 @@ def playRecursiveCombat(player_decks):
                 round_winner = "Player 1"
             else:
                 round_winner = playRecursiveCombat(subgame_decks)
+        # determine round winner via higher card
         else:
             round_winner = "Player " + str(played_cards.index(max(played_cards)) + 1)
         # add cards to round winners deck in the right order
