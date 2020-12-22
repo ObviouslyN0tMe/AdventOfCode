@@ -27,7 +27,7 @@ def formatData(data):
         for allergen in line_allergens:
             if allergen not in allergens_appearance:
                 all_allergens[allergen] = []
-                allergens_appearance[allergen] = line_ingredients
+                allergens_appearance[allergen] = line_ingredients.copy()
                 food_counters[allergen] = 1
             else:
                 allergens_appearance[allergen] += line_ingredients
@@ -71,7 +71,7 @@ def matchAllergensToIngredients():
 def getCDIL():
     global all_allergens
     all_allergens_sorted = sorted(list(all_allergens.keys()))
-    cdil_list = [all_allergens[allergen] for allergen in all_allergens_sorted]
+    cdil_list = ["".join(all_allergens[allergen]) for allergen in all_allergens_sorted]
     cdil = cdil_list[0]
     for ingredient in cdil_list[1:]:
         cdil += "," + ingredient
@@ -82,6 +82,5 @@ def getCDIL():
 formatData(rawdata)
 print("Part 1:", getAllergenFreeIngredients())
 # Part 2
-print(all_allergens)
 matchAllergensToIngredients()
 print("Part 2:", getCDIL())
