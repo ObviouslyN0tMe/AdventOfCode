@@ -63,7 +63,7 @@ def playRecursiveCombat(player_decks):
             played_cards.reverse()
         player_decks[round_winner] += played_cards
         # check if any player has no cards left
-        if len(player_decks["Player 1"]) == 0 or len(player_decks["Player 2"]) == 0:
+        if not player_decks["Player 1"] or not player_decks["Player 2"]:
             return round_winner
 
 
