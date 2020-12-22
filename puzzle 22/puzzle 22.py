@@ -38,7 +38,7 @@ def playCombat(player_decks):
 
 
 def playRecursiveCombat(player_decks):
-    played_rounds = player_decks["Player 1"].copy() + [""] + player_decks["Player 2"].copy()
+    played_rounds = [player_decks["Player 1"].copy() + [""] + player_decks["Player 2"].copy()]
     subgame_decks = {}
     while True:
         # collect cards from top of decks
@@ -60,10 +60,12 @@ def playRecursiveCombat(player_decks):
         player_decks[round_winner] += played_cards
         # check if any player has no cards left
         if len(player_decks["Player 1"]) == 0 or len(player_decks["Player 2"]) == 0:
+            print(len(played_rounds))
             return round_winner
         # endless games end with player 1 winning
         saved_decks = player_decks["Player 1"].copy() + [""] + player_decks["Player 2"].copy()
         if saved_decks in played_rounds:
+            print(len(played_rounds))
             return "Player 1"
         else:
             played_rounds.append(saved_decks)
