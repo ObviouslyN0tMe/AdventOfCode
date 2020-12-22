@@ -1,5 +1,4 @@
 import copy
-import timeit
 
 # puzzle input
 with open("puzzle input") as file:
@@ -7,8 +6,6 @@ with open("puzzle input") as file:
 # test input
 with open("test input") as file:
     testdata = [x.strip(":\n") for x in file.readlines()]
-
-round_count = 0
 
 
 def formatData(data):
@@ -77,17 +74,6 @@ def countScore(deck):
     return score
 
 
-def setup():
-    global decks
-    new_decks = copy.deepcopy(decks)
-    return new_decks
-
-
-def run_part2():
-    new_decks = setup()
-    winner = playRecursiveCombat(new_decks)
-
-
 decks = formatData(rawdata)
 decks_part1 = copy.deepcopy(decks)
 decks_part2 = copy.deepcopy(decks)
@@ -95,10 +81,3 @@ winner_part1 = playCombat(decks_part1)
 winner_part2 = playRecursiveCombat(decks_part2)
 print("Part 1:", countScore(decks_part1[winner_part1]))
 print("Part 2:", countScore(decks_part2[winner_part2]))
-
-
-setupcode = """
-from __main__ import run_part2
-"""
-
-print(timeit.timeit(stmt="run_part2()", setup=setupcode, number=10))
