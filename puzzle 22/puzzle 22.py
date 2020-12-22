@@ -1,4 +1,5 @@
 import copy
+import timeit
 
 # puzzle input
 with open("puzzle input") as file:
@@ -38,9 +39,15 @@ def playCombat(player_decks):
 
 
 def playRecursiveCombat(player_decks):
-    played_rounds = [player_decks["Player 1"].copy() + [""] + player_decks["Player 2"].copy()]
+    played_rounds = []
     subgame_decks = {}
     while True:
+        # endless games end with player 1 winning
+        saved_decks = player_decks["Player 1"].copy() + [""] + player_decks["Player 2"].copy()
+        if saved_decks in played_rounds:
+            return "Player 1"
+        else:
+            played_rounds.append(saved_decks)
         # collect cards from top of decks
         played_cards = [player_decks["Player 1"].pop(0), player_decks["Player 2"].pop(0)]
         # determine round winner via subgame
@@ -60,15 +67,7 @@ def playRecursiveCombat(player_decks):
         player_decks[round_winner] += played_cards
         # check if any player has no cards left
         if len(player_decks["Player 1"]) == 0 or len(player_decks["Player 2"]) == 0:
-            print(len(played_rounds))
             return round_winner
-        # endless games end with player 1 winning
-        saved_decks = player_decks["Player 1"].copy() + [""] + player_decks["Player 2"].copy()
-        if saved_decks in played_rounds:
-            print(len(played_rounds))
-            return "Player 1"
-        else:
-            played_rounds.append(saved_decks)
 
 
 def countScore(deck):
@@ -78,6 +77,17 @@ def countScore(deck):
     return score
 
 
+def setup():
+    global decks
+    new_decks = copy.deepcopy(decks)
+    return new_decks
+
+
+def run_part2():
+    new_decks = setup()
+    winner = playRecursiveCombat(new_decks)
+
+
 decks = formatData(rawdata)
 decks_part1 = copy.deepcopy(decks)
 decks_part2 = copy.deepcopy(decks)
@@ -85,3 +95,10 @@ winner_part1 = playCombat(decks_part1)
 winner_part2 = playRecursiveCombat(decks_part2)
 print("Part 1:", countScore(decks_part1[winner_part1]))
 print("Part 2:", countScore(decks_part2[winner_part2]))
+
+
+setupcode = """
+from __main__ import run_part2
+"""
+
+print(timeit.timeit(stmt="run_part2()", setup=setupcode, number=10))
