@@ -6,6 +6,7 @@ with open("test input") as file:
     testdata = [x.strip(":\n") for x in file.readlines()]
 import copy
 
+
 def formatData(data):
     formated_data = {}
     player = ""
