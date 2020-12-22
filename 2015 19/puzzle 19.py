@@ -26,4 +26,4 @@ def changeElementsToLetters(line):
         line.replace(old, new)
 
 
-# TODO: try calc without programm
+# try calc without programm
