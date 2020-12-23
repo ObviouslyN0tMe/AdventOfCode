@@ -1,23 +1,7 @@
 import copy
 import timeit
 
-# puzzle input
-with open("puzzle input") as file:
-    rawdata = [x.strip(":\n") for x in file.readlines()]
-# test input
-with open("test input") as file:
-    testdata = [x.strip(":\n") for x in file.readlines()]
 
-
-def formatData(data):
-    formated_data = [[], []]
-    player = - 1
-    for line in data:
-        if line.startswith("Player"):
-            player += 1
-        else:
-            formated_data[player].append(int(line))
-    return formated_data
 
 
 def playCombat(player_decks):
@@ -80,7 +64,9 @@ def run():
     y = playRecursiveCombat(x)
 
 
-decks = formatData(rawdata)
+decks = x = [[26, 8, 2, 17, 19, 29, 41, 7, 25, 33, 50, 16, 36, 37, 32, 4, 46, 12, 21, 48, 11, 6, 13, 23, 9],
+        [27, 47, 15, 45, 10, 14, 3, 44, 31, 39, 42, 5, 49, 24, 22, 20, 30, 1, 35, 38, 18, 43, 28, 40, 34]]
+
 decks_part1 = copy.deepcopy(decks)
 decks_part2 = copy.deepcopy(decks)
 winner_part1 = playCombat(decks_part1)
