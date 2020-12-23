@@ -2,48 +2,49 @@ import copy
 import timeit
 
 
-def playCombat(player_decks):
+def playCombat(player1_deck, player2_deck):
     while True:
         # collect cards from top of decks
-        played_cards = [player_decks[0].pop(0), player_decks[1].pop(0)]
+        player1_card, player2_card = player1_deck.pop(0), player2_deck.pop(0)
         # determine round winner
-        round_winner = played_cards.index(max(played_cards))
+        round_winner = player2_card > player1_card
         # add cards to round winners deck in the right order
-        if round_winner == 1:
-            played_cards.reverse()
-        player_decks[round_winner] += played_cards
+        if round_winner:
+            player2_deck += [player2_card, player1_card]
+        else:
+            player1_deck += [player1_card, player2_card]
         # check if any player has no cards left
-        if not player_decks[0] or not player_decks[1]:
-            return round_winner
+        if not player2_deck:
+            return
 
 
-def playRecursiveCombat(player_decks):
+def playRecursiveCombat(player1_deck, player2_deck):
     played_rounds = set()
     while True:
         # endless games end with player 1 winning
-        saved_decks = (tuple(player_decks[0]), tuple(player_decks[1]))
+        saved_decks = (tuple(player1_deck), tuple(player2_deck))
         if saved_decks in played_rounds:
             return 0
         played_rounds.add(saved_decks)
         # collect cards from top of decks
-        player1_card, player2_card = player_decks[0].pop(0), player_decks[1].pop(0)
+        player1_card, player2_card = player1_deck.pop(0), player2_deck.pop(0)
         # determine round winner via higher card
-        if player1_card > len(player_decks[0]) or player2_card > len(player_decks[1]):
+        if player1_card > len(player1_deck) or player2_card > len(player2_deck):
             round_winner = player2_card > player1_card
         # determine round winner via subgame
         else:
-            subgame_decks = [player_decks[0][:player1_card], player_decks[1][:player2_card]]
-            if max(subgame_decks[0]) > max(subgame_decks[1]):
+            subgame_player1_deck, subgame_player2_deck = player1_deck[:player1_card], player2_deck[:player2_card]
+            if max(subgame_player1_deck) > max(subgame_player2_deck):
                 round_winner = 0
             else:
-                round_winner = playRecursiveCombat(subgame_decks)
+                round_winner = playRecursiveCombat(subgame_player1_deck, subgame_player2_deck)
         # add cards to round winners deck in the right order
         if round_winner:
-            player_decks[round_winner] += [player2_card, player1_card]
+            player2_deck += [player2_card, player1_card]
         else:
-            player_decks[round_winner] += [player1_card, player2_card]
+            player1_deck += [player1_card, player2_card]
         # check if any player has no cards left
-        if not player_decks[1] or not player_decks[0]:
+        if not player2_deck or not player1_deck:
             return round_winner
 
 
@@ -55,23 +56,23 @@ def countScore(deck):
 
 
 def run():
-    x = [[26, 8, 2, 17, 19, 29, 41, 7, 25, 33, 50, 16, 36, 37, 32, 4, 46, 12, 21, 48, 11, 6, 13, 23, 9],
-         [27, 47, 15, 45, 10, 14, 3, 44, 31, 39, 42, 5, 49, 24, 22, 20, 30, 1, 35, 38, 18, 43, 28, 40, 34]]
-    y = playRecursiveCombat(x)
+    x1 = [26, 8, 2, 17, 19, 29, 41, 7, 25, 33, 50, 16, 36, 37, 32, 4, 46, 12, 21, 48, 11, 6, 13, 23, 9]
+    x2 = [27, 47, 15, 45, 10, 14, 3, 44, 31, 39, 42, 5, 49, 24, 22, 20, 30, 1, 35, 38, 18, 43, 28, 40, 34]
+    y = playRecursiveCombat(x1, x2)
 
 
-decks = [[26, 8, 2, 17, 19, 29, 41, 7, 25, 33, 50, 16, 36, 37, 32, 4, 46, 12, 21, 48, 11, 6, 13, 23, 9],
-         [27, 47, 15, 45, 10, 14, 3, 44, 31, 39, 42, 5, 49, 24, 22, 20, 30, 1, 35, 38, 18, 43, 28, 40, 34]]
+deck1 = [26, 8, 2, 17, 19, 29, 41, 7, 25, 33, 50, 16, 36, 37, 32, 4, 46, 12, 21, 48, 11, 6, 13, 23, 9]
+deck2 = [27, 47, 15, 45, 10, 14, 3, 44, 31, 39, 42, 5, 49, 24, 22, 20, 30, 1, 35, 38, 18, 43, 28, 40, 34]
+deck1_part2 = copy.deepcopy(deck1)
+deck2_part2 = copy.deepcopy(deck2)
 
-decks_part1 = copy.deepcopy(decks)
-decks_part2 = copy.deepcopy(decks)
-winner_part1 = playCombat(decks_part1)
-winner_part2 = playRecursiveCombat(decks_part2)
-print("Part 1:", countScore(decks_part1[winner_part1]))
-print("Part 2:", countScore(decks_part2[winner_part2]))
+playCombat(deck1, deck2)
+winner_part2 = playRecursiveCombat(deck1_part2, deck2_part2)
+print("Part 1:", countScore(deck1))
+print("Part 2:", countScore(deck1_part2))
+
 
 setupcode = """
 from __main__ import run
-from __main__ import decks
 """
-print(timeit.timeit(stmt=run, setup=setupcode, number=500)/500)
+print(timeit.timeit(stmt=run, setup=setupcode, number=1000)/1000)
