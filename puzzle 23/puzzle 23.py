@@ -37,7 +37,7 @@ def playCrabCups(current_setup, moves, start_cup):
             if destination_cup not in three_cups:
                 break
         # insert 3 cups
-        current_setup[three_cups[2]] = current_setup[destination_cup]
+        current_setup[three_cups[-1]] = current_setup[destination_cup]
         current_setup[destination_cup] = three_cups[0]
         # get new current cup
         current_cup = current_setup[current_cup]
