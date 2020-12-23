@@ -2,6 +2,7 @@ import copy
 import timeit
 
 
+# part 1
 def playCombat(player1_deck, player2_deck):
     while True:
         # collect cards from top of decks
@@ -18,6 +19,7 @@ def playCombat(player1_deck, player2_deck):
             return
 
 
+# part 2
 def playRecursiveCombat(player1_deck, player2_deck):
     played_rounds = set()
     while True:
@@ -48,6 +50,7 @@ def playRecursiveCombat(player1_deck, player2_deck):
             return round_winner
 
 
+# count winners score
 def countScore(deck):
     score = 0
     for multiplier, card in enumerate(reversed(deck), 1):
@@ -55,24 +58,28 @@ def countScore(deck):
     return score
 
 
-def run():
-    x1 = [26, 8, 2, 17, 19, 29, 41, 7, 25, 33, 50, 16, 36, 37, 32, 4, 46, 12, 21, 48, 11, 6, 13, 23, 9]
-    x2 = [27, 47, 15, 45, 10, 14, 3, 44, 31, 39, 42, 5, 49, 24, 22, 20, 30, 1, 35, 38, 18, 43, 28, 40, 34]
-    y = playRecursiveCombat(x1, x2)
-
-
+# create decks
 deck1 = [26, 8, 2, 17, 19, 29, 41, 7, 25, 33, 50, 16, 36, 37, 32, 4, 46, 12, 21, 48, 11, 6, 13, 23, 9]
 deck2 = [27, 47, 15, 45, 10, 14, 3, 44, 31, 39, 42, 5, 49, 24, 22, 20, 30, 1, 35, 38, 18, 43, 28, 40, 34]
 deck1_part2 = copy.deepcopy(deck1)
 deck2_part2 = copy.deepcopy(deck2)
 
+# play and print both parts
 playCombat(deck1, deck2)
-winner_part2 = playRecursiveCombat(deck1_part2, deck2_part2)
+playRecursiveCombat(deck1_part2, deck2_part2)
 print("Part 1:", countScore(deck1))
 print("Part 2:", countScore(deck1_part2))
+
+
+# for timing
+def run():
+    x1 = [26, 8, 2, 17, 19, 29, 41, 7, 25, 33, 50, 16, 36, 37, 32, 4, 46, 12, 21, 48, 11, 6, 13, 23, 9]
+    x2 = [27, 47, 15, 45, 10, 14, 3, 44, 31, 39, 42, 5, 49, 24, 22, 20, 30, 1, 35, 38, 18, 43, 28, 40, 34]
+    playRecursiveCombat(x1, x2)
 
 
 setupcode = """
 from __main__ import run
 """
+
 print(timeit.timeit(stmt=run, setup=setupcode, number=1000)/1000)
