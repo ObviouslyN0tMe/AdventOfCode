@@ -62,7 +62,7 @@ def getSolutionPart2(setup):
 # part 1
 starting_setup_1 = formatData(rawdata, 1)
 final_setup_1 = playCrabCups(starting_setup_1, 100, rawdata[0])
-print(getSolutionPart1(final_setup_1))
+print("Part 1:", getSolutionPart1(final_setup_1))
 
 
 # for timing
@@ -70,7 +70,7 @@ def run():
     # part 2
     starting_setup_2_run = formatData(rawdata, 2)
     final_setup_2_run = playCrabCups(starting_setup_2_run, 10000000, rawdata[0])
-    print(getSolutionPart2(final_setup_2_run))
+    print("Part 2:", getSolutionPart2(final_setup_2_run))
 
 
 setupcode = """
