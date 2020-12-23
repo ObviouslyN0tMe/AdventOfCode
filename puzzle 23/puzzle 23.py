@@ -65,7 +65,6 @@ def getSolutionPart2(setup):
 # part 1
 starting_setup_1 = formatData(rawdata, 1)
 final_setup_1 = playCrabCups(starting_setup_1, 100, rawdata[0])
-
 print(getSolutionPart1(final_setup_1))
 
 # part 2
