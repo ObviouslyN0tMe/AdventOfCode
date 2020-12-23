@@ -1,4 +1,4 @@
-# import timeit
+import timeit
 
 rawdata = [5, 8, 6, 4, 3, 9, 1, 7, 2]
 testdata = [3, 8, 9, 1, 2, 5, 4, 6, 7]
@@ -32,13 +32,10 @@ def playCrabCups(current_setup, moves, start_cup):
         destination_cup = current_cup
         while True:
             destination_cup = (destination_cup - 1)
+            if not destination_cup:
+                destination_cup = modulo
             if destination_cup not in three_cups:
-                if destination_cup:
-                    break
-                else:
-                    destination_cup = modulo
-                    if modulo not in three_cups:
-                        break
+                break
         # insert 3 cups
         current_setup[three_cups[2]] = current_setup[destination_cup]
         current_setup[destination_cup] = three_cups[0]
@@ -67,20 +64,17 @@ starting_setup_1 = formatData(rawdata, 1)
 final_setup_1 = playCrabCups(starting_setup_1, 100, rawdata[0])
 print(getSolutionPart1(final_setup_1))
 
-# part 2
-starting_setup_2 = formatData(rawdata, 2)
-final_setup_2 = playCrabCups(starting_setup_2, 10000000, rawdata[0])
-print(getSolutionPart2(final_setup_2))
-
 
 # for timing
 def run():
-    playCrabCups(starting_setup_2, 10000000, 5)
+    # part 2
+    starting_setup_2_run = formatData(rawdata, 2)
+    final_setup_2_run = playCrabCups(starting_setup_2_run, 10000000, rawdata[0])
+    print(getSolutionPart2(final_setup_2_run))
 
 
 setupcode = """
 from __main__ import run
-from __main__ import starting_setup_2
 """
 
-# print(timeit.timeit(stmt=run, setup=setupcode, number=1))
+print(timeit.timeit(stmt=run, setup=setupcode, number=1))
