@@ -1,3 +1,4 @@
+import timeit
 # puzzle input
 with open("puzzle input") as file:
     rawdata = [x.strip("\n") for x in file.readlines()]
@@ -10,7 +11,6 @@ def filpTiles(instructions):
     tiles = {}
     flipped_counter = 0
     for instruction in instructions:
-        coords = [0, 0]
         # count directions
         ne_count = instruction.count("ne")
         nw_count = instruction.count("nw")
@@ -19,13 +19,11 @@ def filpTiles(instructions):
         e_count = instruction.count("e") - ne_count - se_count
         w_count = instruction.count("w") - nw_count - sw_count
         # x-coord
-        coords[0] += e_count + 0.5 * (ne_count + se_count)
-        coords[0] -= w_count + 0.5 * (nw_count + sw_count)
+        coords_x = e_count - w_count + 0.5 * (ne_count + se_count - nw_count - sw_count)
         # y-coord
-        coords[1] += 0.5 * (ne_count + nw_count)
-        coords[1] -= 0.5 * (se_count + sw_count)
+        coords_y = 0.5 * (ne_count + nw_count - se_count - sw_count)
         # flip tile
-        coords = tuple(coords)
+        coords = (coords_x, coords_y)
         flipped = tiles.get(coords, False)
         tiles[coords] = not flipped
         # count flipped tiles
@@ -38,10 +36,12 @@ def filpTiles(instructions):
 
 def getNeighbours(coords, tiles):
     flipped_count = 0
+    coord_x = coords[0]
+    coord_y = coords[1]
     # calc all neighbours coords
-    neighbours_coords = [(coords[0] + 1, coords[1]), (coords[0] - 1, coords[1])]
-    for x, y in [(-0.5, -0.5), (-0.5, 0.5), (0.5, -0.5), (0.5, 0.5)]:
-        neighbours_coords.append((coords[0] + x, coords[1] + y))
+    neighbours_coords = [(coord_x + 1, coord_y), (coord_x - 1, coord_y),
+                         (coord_x - 0.5, coord_y - 0.5), (coord_x - 0.5, coord_y + 0.5),
+                         (coord_x + 0.5, coord_y - 0.5), (coord_x + 0.5, coord_y + 0.5)]
     # count flipped neighbours
     for neighbour_coords in neighbours_coords:
         if tiles.get(neighbour_coords, False):
@@ -58,12 +58,17 @@ def doDailyFlipping(tiles):
             new_tiles[coords] = False
         elif not flipped and flipped_count == 2:
             new_tiles[coords] = True
+            # add neighbours to observered tiles
+            for neighbour_coords in neighbours_coords:
+                if neighbour_coords not in tiles.keys():
+                    new_tiles[neighbour_coords] = False
         else:
             new_tiles[coords] = flipped
-        # add neighbours to observered tiles
-        for neighbour_coords in neighbours_coords:
-            if neighbour_coords not in tiles.keys():
-                new_tiles[neighbour_coords] = False
+            if not flipped:
+                # add neighbours to observered tiles
+                for neighbour_coords in neighbours_coords:
+                    if neighbour_coords not in tiles.keys():
+                        new_tiles[neighbour_coords] = False
     return new_tiles
 
 
@@ -76,18 +81,26 @@ def countFlippedAfterXDays(x, tiles):
         for neighbour_coords in neighbours_coords:
             if neighbour_coords not in tiles.keys():
                 new_tiles[neighbour_coords] = False
-    tiles = new_tiles.copy()
     # doDailyFlipping for x days
     for i in range(x):
-        new_tiles = doDailyFlipping(tiles)
-        tiles = new_tiles.copy()
-    for flipped in tiles.values():
+        new_tiles = doDailyFlipping(new_tiles)
+    for flipped in new_tiles.values():
         if flipped:
             total_flipped_count += 1
     return total_flipped_count
 
 
-part1, start_tiles = filpTiles(rawdata)
-part2 = countFlippedAfterXDays(100, start_tiles)
-print("Part 1:", part1)
-print("Part 2:", part2)
+# for timing
+def run():
+    # part 2
+    part1, start_tiles = filpTiles(rawdata)
+    part2 = countFlippedAfterXDays(100, start_tiles)
+    print("Part 1:", part1)
+    print("Part 2:", part2)
+
+
+setupcode = """
+from __main__ import run
+"""
+
+print(timeit.timeit(stmt=run, setup=setupcode, number=1))
