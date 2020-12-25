@@ -38,4 +38,4 @@ def run():
     print("Part 1:", solution)
 
 
-print(timeit.timeit(stmt=runSuperShort, number=10))
+print(timeit.timeit(stmt=run, number=10))
