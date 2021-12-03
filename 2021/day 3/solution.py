@@ -42,12 +42,12 @@ with open("puzzleinput") as file:
 oxygen = data_2.copy()
 oxygen_generator_rating = 0
 
-for index in range(0, 11):
+for index in range(0, len(data_2[0])):
     count_1 = 0
     count_0 = 0
     new = []
     for binary in oxygen:
-        if binary[index] == 1:
+        if binary[index] == "1":
             count_1 += 1
         else:
             count_0 += 1
@@ -59,19 +59,19 @@ for index in range(0, 11):
         if binary[index] == most_common:
             new.append(binary)
     if len(new) == 1:
-        oxygen_generator_rating = int(new[0])
+        oxygen_generator_rating = int(new[0], 2)
         break
     oxygen = new
 
 co2 = data_2.copy()
 co2_scrubber_rating = 0
 
-for index in range(0, 11):
+for index in range(0, len(data_2[0])):
     count_1 = 0
     count_0 = 0
     new = []
     for binary in co2:
-        if binary[index] == 1:
+        if binary[index] == "1":
             count_1 += 1
         else:
             count_0 += 1
@@ -83,9 +83,8 @@ for index in range(0, 11):
         if binary[index] == least_common:
             new.append(binary)
     if len(new) == 1:
-        co2_scrubber_rating = int(new[0])
+        co2_scrubber_rating = int(new[0], 2)
         break
     co2 = new
 
-print(oxygen, co2)
 print("Part 2:", str(oxygen_generator_rating * co2_scrubber_rating))
