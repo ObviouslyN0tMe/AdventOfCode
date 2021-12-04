@@ -12,7 +12,7 @@ class bingoboard(object):
         for index in range(len(self.rows[0])):
             column = []
             for row in self.rows:
-                column.append([row[index]])
+                column.append(row[index])
             self.columns.append(column)
 
     def removeNumber(self, number):
@@ -54,7 +54,6 @@ for number in drawn_numbers:
     for board in winning_boards:
         bingoboards.remove(board)
     winning_boards = []
-
 
 print("Part 1:", scores[0])
 print("Part 2:", scores[-1])
