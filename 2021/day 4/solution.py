@@ -43,33 +43,18 @@ for line in bingocard_lines:
         bingoboards.append(bingoboard(board))
         board = []
 
-score = 0
-winning_board = []
-for number in drawn_numbers:
-    for board in bingoboards:
-        score = board.removeNumber(number)
-        if score:
-            winning_board = board
-            break
-    if score:
-        bingoboards.remove(winning_board)
-        break
-
-
-print("Part 1:", score)
-
-# Part 2
-last_score = 0
+scores = []
 winning_boards = []
 for number in drawn_numbers:
     for board in bingoboards:
         score = board.removeNumber(number)
         if score:
+            scores.append(score)
             winning_boards.append(board)
-            last_score = score
-            score = None
     for board in winning_boards:
         bingoboards.remove(board)
     winning_boards = []
 
-print("Part 2:", last_score)
+
+print("Part 1:", scores[0])
+print("Part 2:", scores[-1])
