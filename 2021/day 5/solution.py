@@ -48,7 +48,7 @@ for line in lines_vertical:
     for y in range(start, end+1):
         board[(x, y)] += 1
 
-# draw vertical lines
+# draw diagonal lines
 
 for line in lines_diagonal:
     start_x = line[0][0]
@@ -64,7 +64,7 @@ for line in lines_diagonal:
         steps_y = -1
     else:
         steps_y = 1
-    for x in range(start_x, end_x + 1, steps_x):
+    for x in range(start_x, end_x + steps_x, steps_x):
         board[(x, y)] += 1
         y += steps_y
 
@@ -75,4 +75,4 @@ for overlaps in board.values():
     if overlaps > 1:
         counter += 1
 
-print("Part 1:", counter)
+print("Part 2:", counter)
