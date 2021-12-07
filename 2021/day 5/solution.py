@@ -22,7 +22,6 @@ for line in data:
 board = defaultdict(int)
 end = 0
 start = 0
-steps = 1
 
 # draw horizontal lines
 for line in lines_horizontal:
@@ -30,12 +29,10 @@ for line in lines_horizontal:
     if line[0][0] > line[1][0]:
         start = line[1][0]
         end = line[0][0]
-        steps = -1
     else:
         start = line[0][0]
         end = line[1][0]
-        steps = 1
-    for x in range(start, end+1, steps):
+    for x in range(start, end+1):
         board[(x, y)] += 1
 
 # draw vertical lines
@@ -45,12 +42,10 @@ for line in lines_vertical:
     if line[0][1] > line[1][1]:
         start = line[1][1]
         end = line[0][1]
-        steps = -1
     else:
         start = line[0][1]
         end = line[1][1]
-        steps = 1
-    for y in range(start, end+1, steps):
+    for y in range(start, end+1):
         board[(x, y)] += 1
 
 # count how many overlaps
