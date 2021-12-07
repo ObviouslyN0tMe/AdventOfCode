@@ -48,6 +48,27 @@ for line in lines_vertical:
     for y in range(start, end+1):
         board[(x, y)] += 1
 
+# draw vertical lines
+
+for line in lines_diagonal:
+    start_x = line[0][0]
+    end_x = line[1][0]
+    start_y = line[0][1]
+    end_y = line[1][1]
+    y = start_y
+    if start_x > end_x:
+        steps_x = -1
+    else:
+        steps_x = 1
+    if start_y > end_y:
+        steps_y = -1
+    else:
+        steps_y = 1
+    for x in range(start_x, end_x + 1, steps_x):
+        board[(x, y)] += 1
+        y += steps_y
+
+
 # count how many overlaps
 counter = 0
 for overlaps in board.values():
